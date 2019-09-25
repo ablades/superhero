@@ -36,12 +36,22 @@ class Hero:
             name: String
             starting_health: Integer
             current_health: Integer
+            deaths: Integer
+            kills: Integer
         '''
         self.name = name
         self.starting_health = starting_health
         self.current_health = starting_health
         self.abilities = []
         self.armors = []
+        self.kills = 0
+        self.deaths = 0
+
+    def add_kill(self, num_kills):
+        self.kills += num_kills
+    
+    def add_deaths(self, num_deaths):
+        self.deaths += num_deaths
     
     def add_ability(self, ability):
         ''' Add ability to abilities list '''
@@ -63,7 +73,7 @@ class Hero:
         '''
         self.armors.append(Armor(armor.name, armor.max_block))
     
-    def defend(self, damage_amt):
+    def defend(self):
         ''' Runs 'block' method on each armor.
             Returns sum of all blocks
         '''
@@ -76,10 +86,10 @@ class Hero:
     def take_damage(self, damage):
         ''' Updates self.current_health to reflect the damage minus defense.
         '''
-        damage_taken = damage - self.defend(damage)
+        damage_taken = damage - self.defend()
         self.current_health -= damage_taken
 
-    def is_alive(self):
+    def is_alive(self): 
         '''Return True or False depending on whether the hero is alive or not.
         '''
         if self.current_health > 0:
@@ -101,8 +111,12 @@ class Hero:
 
         if self.current_health > opponent.current_health:
             print(f"{self.name} Wins!!!")
+            self.add_kill(1)
+            opponent.add_deaths(1)
         else:
             print(f"{opponent.name} Wins!!!")
+            self.add_deaths(1)
+            opponent.add_kill(1)
 
 class Weapon(Ability):
     def attack(self):
@@ -134,21 +148,26 @@ class Team:
         for hero in self.heroes:
             print(hero.name)
 
+    def attack(self, other_team):
+        ''' Battle each team against each other.'''
+
+  
+        while len([h for h in self.heroes if h.is_alive()]) > 0 and len([h for h in other_team.heroes if h.is_alive()]) > 0:
+            friend = r.choice([h for h in self.heroes if h.is_alive()])
+            foe = r.choice([h for h in other_team.heroes if h.is_alive()])
+            friend.fight(foe)
+
+    def revive_heroes(self, health=100):
+        ''' Reset all heroes health to starting_health'''
+        for hero in self.heroes:
+            hero.current_health = health
+
+    def stats(self):
+        '''Print team statistics'''
+        for hero in self.heroes:
+            print(hero.kills, hero.deaths)
+
     
-
-
-
-
-
-
-
-
-
-
-    
-
- 
-        
 
 
 if __name__ == "__main__":
