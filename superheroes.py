@@ -118,6 +118,10 @@ class Hero:
             self.add_deaths(1)
             opponent.add_kill(1)
 
+    def add_weapon(self, weapon):
+        '''Add weapon to self.abilities'''
+        self.abilities.append(weapon)
+
 class Weapon(Ability):
     def attack(self):
         ''' Returns a random value between one half to the full attack power '''
@@ -148,13 +152,23 @@ class Team:
         for hero in self.heroes:
             print(hero.name)
 
+    #helper function
+    def alive_heroes(self):
+        alive_heroes = []
+        for h in self.heroes:
+            if h.is_alive():
+                alive_heroes.append(h)
+        return alive_heroes
+
+                
+
     def attack(self, other_team):
         ''' Battle each team against each other.'''
 
   
-        while len([h for h in self.heroes if h.is_alive()]) > 0 and len([h for h in other_team.heroes if h.is_alive()]) > 0:
-            friend = r.choice([h for h in self.heroes if h.is_alive()])
-            foe = r.choice([h for h in other_team.heroes if h.is_alive()])
+        while len(self.alive_heroes()) > 0 and len(other_team.alive_heroes()) > 0:
+            friend = r.choice(self.alive_heroes())
+            foe = r.choice(other_team.alive_heroes())
             friend.fight(foe)
 
     def revive_heroes(self, health=100):
@@ -166,6 +180,79 @@ class Team:
         '''Print team statistics'''
         for hero in self.heroes:
             print(hero.kills, hero.deaths)
+
+class Arena:
+    def __init__(self):
+        '''Instantiate properties
+                team_one: Team
+                team_two: Team
+        '''
+        self.team_one = Team("Team One")
+        self.team_two = Team("Team Two")
+    
+    def create_ability(self):
+        '''Prompt for Ability information'''
+        name = input("Enter an ability name: ")
+        strength = int(input("Enter ability strength: "))
+        return Ability(name, strength)
+
+    def create_weapon(self):
+        '''Prompt user for Weapon information'''
+        name = input("Enter a Weapon Name ")
+        strength = int(input("Enter weapon strength: "))
+        return Weapon(name, strength)
+
+    def create_armor(self):
+        '''Prompt user for Armor information'''
+        name = input("Enter a Weapon Name ")
+        strength = int(input("Enter armor block: "))
+        return Armor(name, strength)
+
+    def create_hero(self):
+        name = input("Enter a hero name: ")
+        hero = Hero(name)
+        hero.add_ability(self.create_ability())
+        hero.add_armor(self.create_armor())
+        hero.add_weapon(self.create_weapon())
+        return hero
+
+    def build_team_one(self):
+        '''Prompt the user to build team_one '''
+        count = int(input("Enter # of heroes for team 1: "))
+
+        while(count>0):
+            self.team_one.heroes.append(self.create_hero())
+            count -= 1
+
+    def build_team_two(self):
+        '''Prompt the user to build team_two'''
+        count = int(input("Enter # of heroes for team 2: "))
+        team_two = Team("Team Two")
+        while(count>0):
+            team_two.heroes.append(self.create_hero())
+            count -= 1
+
+    def team_battle(self):
+        '''Battle team_one and team_two together'''
+        self.team_one.attack(self.team_two)
+
+    def show_stats(self):
+        '''Prints team statistics to terminal'''
+                # TODO: This method should print out battle statistics
+        # including each team's average kill/death ratio.
+        # Required Stats:
+        #     Declare winning team
+        #     Show both teams average kill/death ratio.
+        #     Show surviving heroes.
+        if len(self.team_one.alive_heroes()) > 0:
+            print("Team One Wins!")
+        else:
+            print("Team Two Wins!")
+        self.team_one.stats()
+        self.team_two.stats()
+        self.team_one.alive_heroes()
+        self.team_two.alive_heroes()
+
 
     
 
@@ -182,3 +269,8 @@ if __name__ == "__main__":
     hero2.add_ability(ability3)
     hero2.add_ability(ability4)
     hero1.fight(hero2)
+    arena = Arena()
+    arena.build_team_one()
+    arena.build_team_two()
+    arena.team_battle()
+    arena.show_stats()
