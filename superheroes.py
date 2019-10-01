@@ -177,8 +177,9 @@ class Team:
 
     def stats(self):
         '''Print team statistics'''
-        for hero in self.heroes:
-            print(f"Hero: {hero.name} K: {hero.kills}, D: {hero.deaths}")
+        print(f"Team: {self.name}")
+        for h in self.heroes:
+            print(f"Hero: {h.name} K: {h.kills}, D: {h.deaths}")
 
 class Arena:
     def __init__(self):
@@ -226,9 +227,9 @@ class Arena:
     def build_team_two(self):
         '''Prompt the user to build team_two'''
         count = int(input("Enter # of heroes for team 2: "))
-        team_two = Team("Team Two")
+
         while(count>0):
-            team_two.heroes.append(self.create_hero())
+            self.team_two.heroes.append(self.create_hero())
             count -= 1
 
     def team_battle(self):
