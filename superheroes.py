@@ -164,7 +164,6 @@ class Team:
 
     def attack(self, other_team):
         ''' Battle each team against each other.'''
-
   
         while len(self.alive_heroes()) > 0 and len(other_team.alive_heroes()) > 0:
             friend = r.choice(self.alive_heroes())
@@ -174,12 +173,12 @@ class Team:
     def revive_heroes(self, health=100):
         ''' Reset all heroes health to starting_health'''
         for hero in self.heroes:
-            hero.current_health = health
+            hero.current_health = hero.starting_health
 
     def stats(self):
         '''Print team statistics'''
         for hero in self.heroes:
-            print(hero.kills, hero.deaths)
+            print(f"Hero: {hero.name} K: {hero.kills}, D: {hero.deaths}")
 
 class Arena:
     def __init__(self):
@@ -238,20 +237,19 @@ class Arena:
 
     def show_stats(self):
         '''Prints team statistics to terminal'''
-                # TODO: This method should print out battle statistics
-        # including each team's average kill/death ratio.
-        # Required Stats:
-        #     Declare winning team
-        #     Show both teams average kill/death ratio.
-        #     Show surviving heroes.
         if len(self.team_one.alive_heroes()) > 0:
             print("Team One Wins!")
         else:
             print("Team Two Wins!")
+
         self.team_one.stats()
         self.team_two.stats()
-        self.team_one.alive_heroes()
-        self.team_two.alive_heroes()
+
+        heroes_list = [h.name for h in self.team_one.alive_heroes()]
+        opp_list = [h.name for h in self.team_two.alive_heroes()]
+
+        print(f" Team one alive heroes: {heroes_list} ")
+        print(f"Team two alive heroes: {opp_list}")
 
 
     
@@ -269,8 +267,18 @@ if __name__ == "__main__":
     hero2.add_ability(ability3)
     hero2.add_ability(ability4)
     hero1.fight(hero2)
+
     arena = Arena()
     arena.build_team_one()
     arena.build_team_two()
-    arena.team_battle()
-    arena.show_stats()
+
+    while True:
+        arena.team_battle()
+        arena.show_stats()
+        play_again = input("Would you like to battle again? (y/n)")
+
+        if not play_again.lower() == 'y':
+            break
+        else:
+            arena.team_one.revive_heroes()
+            arena.team_two.revive_heroes()
